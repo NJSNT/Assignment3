@@ -1,3 +1,4 @@
+//VIA UNIVERSITY COLLEGE - WEB1GROUP7ASSIGNMENT3
 // game stats
 let playerScore = 0;
 let computerScore = 0;
@@ -258,4 +259,5 @@ resetstats.addEventListener("click",function(){
 })
 
 // Initialize game
+
 initGame();
