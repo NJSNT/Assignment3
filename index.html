@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Rock, Paper, Scissors</title>
+  <link href="styles/styles.css" type="text/css" rel="stylesheet" />
+</head>
+
+<body>
+
+  <div class="layout">
+    <!-- Left text area -->
+    <div class="info-panel">
+      <h1>Rock, Paper, Scissors</h1>
+      <p>
+        Welcome to the classic game! <br><br>
+        Click your choice on the table — rock, paper, or scissors — and see if you can beat the computer.
+      </p>
+      <ul>
+        <li><b>Rock</b> beats Scissors</li>
+        <li><b>Paper</b> beats Rock</li>
+        <li><b>Scissors</b> beats Paper</li>
+      </ul>
+      <p>
+        First to reach <b>3 points</b> wins!
+      </p>
+    </div>
+
+    <!-- Game area -->
+    <div class="game-area">
+      <div class="table-stack">
+        <!-- Points box -->
+        <div class="points" id="pointsBox">
+          <div class="points-left">Player: 0</div>
+          <div class="divider"></div>
+          <div class="points-right">Computer: 0</div>
+        </div>
+
+        <!-- Table -->
+        <div class="table">
+          <div class="hearts-left">
+            <img src="images/heart.png" alt="Heart" class="heart-imgLeft">
+            <img src="images/heart.png" alt="Heart" class="heart-imgLeft">
+            <img src="images/heart.png" alt="Heart" class="heart-imgLeft">
+          </div>
+            <div class="divider2"></div>
+          <div class="hearts-right">
+            <img src="images/heart.png" alt="Heart" class="heart-imgRight">
+            <img src="images/heart.png" alt="Heart" class="heart-imgRight">
+            <img src="images/heart.png" alt="Heart" class="heart-imgRight">
+          </div>
+          
+          
+          <div class="table-inner">
+            <div class="hands">
+                <img src="images/rockwhite.png" class="left-hand">
+                <img src="images/rockblack.png" class="right-hand">
+            </div>
+          </div>
+
+          <!-- Images under the table -->
+          <div class="table-images">
+          <img src="images/rock.png" alt="Rock" class="rock-img">
+          <img src="images/paper.png" alt="Paper" class="paper-img">
+          <img src="images/scissors.png" alt="Scissors" class="scissors-img">
+        </div>
+
+          
+        </div>
+
+        <!-- Result / feedback message -->
+        <div class="result-message" id="resultMessage">
+          
+        </div>
+
+        
+
+        <!-- Reset button -->
+        <button class="reset-btn" id="resetBtn">Reset Game</button>
+      </div>
+    </div>
+
+    <div class="stats">
+      <h1>Stats:</h1>
+      <p>
+        <div class="gameplayed">Game played: 0</div><br>
+        <div class="win">Win: 0</div><br>
+        <div class="lose">Lose: 0</div><br>
+        <div class="winp">Win %: 0</div><br>
+        <div class="statsreset">Reset Stats</div>
+    </div>
+  </div>
+  <script src="js/script.js"></script>
+</body>
+</html>
