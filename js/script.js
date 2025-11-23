@@ -1,264 +1,150 @@
 // VIA UNIVERSITY COLLEGE - WEB1GROUP7ASSIGNMENT3
-// game stats
-let playerScore = 0;
-let computerScore = 0;
-let playerLives = 3;
-let computerLives = 3;
-let gameOver = false;
+// Game start
+const gameState = {
+  playerScore: 0,
+  computerScore: 0,
+  playerLives: 3,
+  computerLives: 3,
+  gameOver: false,
+  stats: {
+    gamesPlayed: 0,
+    wins: 0,
+    losses: 0,
+    winPercentage: 0
+  }
+};
 
-// stats variables
-let gamesPlayed = 0;
-let wins = 0;
-let losses = 0;
-let winPercentage = 0;
+// DOM
+const DOM = {
+  playerScore: document.querySelector('.points-left'),
+  computerScore: document.querySelector('.points-right'),
+  resultMessage: document.getElementById('resultMessage'),
+  resetBtn: document.getElementById('resetBtn'),
+  choiceImages: document.querySelectorAll('.table-images img'),
+  playerHearts: document.querySelectorAll('.heart-imgLeft'),
+  computerHearts: document.querySelectorAll('.heart-imgRight'),
+  leftHand: document.querySelector('.left-hand'),
+  rightHand: document.querySelector('.right-hand'),
+  stats: {
+    gamesPlayed: document.querySelector('.gameplayed'),
+    wins: document.querySelector('.win'),
+    losses: document.querySelector('.lose'),
+    winPercentage: document.querySelector('.winp'),
+    resetStats: document.querySelector('.statsreset')
+  }
+};
+ DOM.resultMessage.textContent = "Choose your hand";
+const rules = { rock: "scissors", paper: "rock", scissors: "paper" };
 
-//dom elements
-const playerScoreDisplay = document.querySelector('.points-left');
-const computerScoreDisplay = document.querySelector('.points-right');
-const resultMessage = document.getElementById('resultMessage');
-const resetButton = document.getElementById('resetBtn');
-const choiceImages = document.querySelectorAll('.table-images img');
-const playerHearts = document.querySelectorAll('.heart-imgLeft');
-const computerHearts = document.querySelectorAll('.heart-imgRight');
-const leftHand = document.querySelector('.left-hand');
-const rightHand = document.querySelector('.right-hand');
-
-// stats elements
-const gamesPlayedDisplay = document.querySelector('.gameplayed');
-const winsDisplay = document.querySelector('.win');
-const lossesDisplay = document.querySelector('.lose');
-const winPercentageDisplay = document.querySelector('.winp');
-const resetstats = document.querySelector('.statsreset');
-
-//initialize game
-function initGame() {
-    playerScore = 0;
-    computerScore = 0;
-    playerLives = 3;
-    computerLives = 3;
-    gameOver = false;
-    
-    updateScoreDisplay();
-    updateHeartDisplay();
-    resultMessage.textContent = "Choose your weapon!";
-    
-    // Reset hand images
-    leftHand.src = "images/green.png";
-    rightHand.src = "images/green.png";
-    
-    // Enable all choices
-    choiceImages.forEach(img => {
-        img.style.opacity = "1";
-        img.style.cursor = "pointer";
-    });
-    
-    // Load stats
-    loadStats();
+//function
+function updateScores() {
+  DOM.playerScore.textContent = `Player: ${gameState.playerScore}`;
+  DOM.computerScore.textContent = `Computer: ${gameState.computerScore}`;
 }
 
-// Load stats from localStorage
-function loadStats() {
-    const savedStats = localStorage.getItem('rpsStats');
-    if (savedStats) {
-        const stats = JSON.parse(savedStats);
-        gamesPlayed = stats.gamesPlayed || 0;
-        wins = stats.wins || 0;
-        losses = stats.losses || 0;
-        winPercentage = stats.winPercentage || 0;
-    }
-    updateStatsDisplay();
+function updateHearts() {
+  DOM.playerHearts.forEach((heart, i) => heart.style.display = i < gameState.playerLives ? "block" : "none");
+  DOM.computerHearts.forEach((heart, i) => heart.style.display = i < gameState.computerLives ? "block" : "none");
 }
 
-// Save stats to localStorage
-function saveStats() {
-    const stats = {
-        gamesPlayed: gamesPlayed,
-        wins: wins,
-        losses: losses,
-        winPercentage: winPercentage
-    };
-    localStorage.setItem('rpsStats', JSON.stringify(stats));
-}
-
-// Update stats display
 function updateStatsDisplay() {
-    gamesPlayedDisplay.textContent = `Game played: ${gamesPlayed}`;
-    winsDisplay.textContent = `Win: ${wins}`;
-    lossesDisplay.textContent = `Lose: ${losses}`;
-    winPercentageDisplay.textContent = `Win %: ${winPercentage}`;
+  const s = gameState.stats;
+  DOM.stats.gamesPlayed.textContent = `Game played: ${s.gamesPlayed}`;
+  DOM.stats.wins.textContent = `Win: ${s.wins}`;
+  DOM.stats.losses.textContent = `Lose: ${s.losses}`;
+  DOM.stats.winPercentage.textContent = `Win %: ${s.winPercentage}`;
 }
 
-// Update stats
-function updateStats(result) {
-    gamesPlayed++;
-    
-    if (result === 'player') {
-        wins++;
-    } else if (result === 'computer') {
-        losses++;
-    }
-    
-    winPercentage = gamesPlayed > 0 ? Math.round((wins / gamesPlayed) * 100) : 0;
-    
-    saveStats();
-    updateStatsDisplay();
+function saveStats() { localStorage.setItem('rpsStats', JSON.stringify(gameState.stats)); }
+function loadStats() {
+  const saved = JSON.parse(localStorage.getItem('rpsStats'));
+  if (saved) gameState.stats = saved;
+  updateStatsDisplay();
 }
 
-// Update score display
-function updateScoreDisplay() {
-    playerScoreDisplay.textContent = `Player: ${playerScore}`;
-    computerScoreDisplay.textContent = `Computer: ${computerScore}`;
-}
-
-// Update heart display
-function updateHeartDisplay() {
-    playerHearts.forEach((heart, index) => {
-        if (index < playerLives) {
-            heart.style.display = "block";
-        } else {
-            heart.style.display = "none";
-        }
-    });
-    computerHearts.forEach((heart, index) => {
-        if (index < computerLives) {
-            heart.style.display = "block";
-        } else {
-            heart.style.display = "none";
-        }
-    });
-}
-
-// Get computer choice
+// Game played
 function getComputerChoice() {
-    const choices = ['rock', 'paper', 'scissors'];
-    const randomIndex = Math.floor(Math.random() * 3);
-    return choices[randomIndex];
+  return Object.keys(rules)[Math.floor(Math.random() * 3)];
 }
 
-// Determine winner
-function determineWinner(playerChoice, computerChoice) {
-    if (playerChoice === computerChoice) {
-        return 'tie';
-    }
-    
-    if (
-        (playerChoice === 'rock' && computerChoice === 'scissors') ||
-        (playerChoice === 'paper' && computerChoice === 'rock') ||
-        (playerChoice === 'scissors' && computerChoice === 'paper')
-    ) {
-        return 'player';
-    } else {
-        return 'computer';
-    }
+function determineWinner(player, computer) {
+  if (player === computer) return 'tie';
+  return rules[player] === computer ? 'player' : 'computer';
 }
 
-// Handle player choice
-function handlePlayerChoice(event) {
-    if (gameOver) return;
-    
-    const playerChoice = event.target.classList[0].replace('-img', '');
-    const computerChoice = getComputerChoice();
-    
-
-    leftHand.src = `images/${playerChoice}white.png`;
-    rightHand.src = `images/${computerChoice}black.png`;
-    
-    const winner = determineWinner(playerChoice, computerChoice);
-    
-    // Display result
-    let message = '';
-    if (winner === 'player') {
-        message = `You win! ${playerChoice} beats ${computerChoice}`;
-        computerLives--;
-        updateHeartDisplay();
-    } else if (winner === 'computer') {
-        message = `You lose! ${computerChoice} beats ${playerChoice}`;
-        playerLives--;
-        updateHeartDisplay();
-    } else {
-        message = `It's a tie! Both chose ${playerChoice}`;
-    }
-    
-    resultMessage.textContent = message;
-    updateScoreDisplay();
-    checkGameOver();
+function updateGameStats(winner) {
+  const stats = gameState.stats;
+  stats.gamesPlayed++;
+  if (winner === 'player') stats.wins++;
+  else if (winner === 'computer') stats.losses++;
+  stats.winPercentage = Math.round((stats.wins / stats.gamesPlayed) * 100);
+  saveStats();
+  updateStatsDisplay();
 }
 
-// Check if game is over
-function checkGameOver() {
-    if (computerLives == 0) {
-        playerScore++;
-        updateScoreDisplay();
-        playerLives = 3;
-        computerLives = 3;
-        updateHeartDisplay();
-        
-        if (playerScore >= 3) {
-            updateStats('player');
-            endGame('player');
-        } else {
-            resultMessage.textContent = "You won this round! Next round starting...";
-            setTimeout(() => {
-                resultMessage.textContent = "Choose your weapon!";
-                leftHand.src = "images/green.png";
-                rightHand.src = "images/green.png";
-            }, 800);
-        }
-    } else if (playerLives == 0) {
-        computerScore++;
-        updateScoreDisplay();
-        playerLives = 3;
-        computerLives = 3;
-        updateHeartDisplay();
-        
-        if (computerScore >= 3) {
-            updateStats('computer');
-            endGame('computer');
-        } else {
-            resultMessage.textContent = "Computer won this round! Next round starting...";
-            setTimeout(() => {
-                resultMessage.textContent = "Choose your weapon!";
-                leftHand.src = "images/green.png";
-                rightHand.src = "images/green.png";
-            }, 800);
-        }
-    }
+function setHands(player, computer) {
+  DOM.leftHand.src = `images/${player}white.png`;
+  DOM.rightHand.src = `images/${computer}black.png`;
 }
 
-// End game
+function resetHands() {
+  DOM.leftHand.src = "images/green.png";
+  DOM.rightHand.src = "images/green.png";
+}
+
 function endGame(winner) {
-    gameOver = true;
-    
-    if (winner === 'player') {
-        resultMessage.textContent = "You won the game!";
-    } else {
-        resultMessage.textContent = "Game Over!You lost!";
-    }
-    
-    // Disable choices
-    choiceImages.forEach(img => {
-        img.style.opacity = "0.5";
-        img.style.cursor = "default";
-    });
+  gameState.gameOver = true;
+  DOM.resultMessage.textContent = winner === 'player' ? "You won the game!" : "Game Over! You lost!";
+  DOM.choiceImages.forEach(img => { img.style.opacity = "0.5"; img.style.cursor = "default"; });
 }
 
-// Event listeners
-choiceImages.forEach(img => {
-    img.addEventListener('click', handlePlayerChoice);
+function handleRoundEnd() {
+  gameState.playerLives = 3;
+  gameState.computerLives = 3;
+  updateHearts();
+  resetHands();
+  if (gameState.playerScore >= 3) return endGame('player');
+  if (gameState.computerScore >= 3) return endGame('computer');
+}
+
+function handlePlayerChoice(e) {
+  if (gameState.gameOver) return;
+
+  const playerChoice = e.target.classList[0].replace('-img', '');
+  const computerChoice = getComputerChoice();
+  setHands(playerChoice, computerChoice);
+
+  const winner = determineWinner(playerChoice, computerChoice);
+  let message = '';
+  if (winner === 'player') { gameState.computerLives--; }
+  else if (winner === 'computer') { gameState.playerLives--; }
+
+  updateHearts();
+
+  // Check if lives reached 0
+  if (gameState.playerLives === 0) { gameState.computerScore++; updateScores(); updateGameStats('computer'); handleRoundEnd(); }
+  if (gameState.computerLives === 0) { gameState.playerScore++; updateScores(); updateGameStats('player'); handleRoundEnd(); }
+}
+
+
+function initGame() {
+  gameState.playerScore = 0;
+  gameState.computerScore = 0;
+  gameState.playerLives = 3;
+  gameState.computerLives = 3;
+  gameState.gameOver = false;
+  updateScores();
+  updateHearts();
+  resetHands();
+  DOM.choiceImages.forEach(img => { img.style.opacity = "1"; img.style.cursor = "pointer"; });
+  loadStats();
+}
+
+DOM.choiceImages.forEach(img => img.addEventListener('click', handlePlayerChoice));
+DOM.resetBtn.addEventListener('click', initGame);
+DOM.stats.resetStats.addEventListener('click', () => {
+  gameState.stats = { gamesPlayed:0, wins:0, losses:0, winPercentage:0 };
+  saveStats(); updateStatsDisplay();
 });
 
-resetButton.addEventListener('click', initGame);
-
-resetstats.addEventListener("click",function(){
-    gamesPlayed = 0;
-    wins = 0;
-    losses = 0;
-    winPercentage = 0;
-    saveStats();
-    updateStatsDisplay();
-})
-
-// Initialize game
-
 initGame();
-
